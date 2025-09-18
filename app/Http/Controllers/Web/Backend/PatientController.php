@@ -48,7 +48,7 @@ class PatientController extends Controller
 
     public function show(string $id)
     {
-        $patient = $this->patientService->find($id);
+        $patient = $this->patientService->getById($id);
 
         if (!$patient) {
             return response()->json(['error' => 'Patient not found.'], 404);
