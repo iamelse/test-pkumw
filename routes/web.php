@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Web\Auth\LoginController;
 use App\Http\Controllers\Web\Auth\LogoutController;
+use App\Http\Controllers\Web\Auth\RegisterController;
 use App\Http\Controllers\Web\Backend\DashboardController;
 use App\Http\Controllers\Web\Backend\RoleController;
 use Illuminate\Support\Facades\Route;
@@ -18,6 +19,8 @@ Route::get('/', function () {
 Route::prefix('auth')->middleware('is.guest')->group(function () {
     Route::get('/login', [LoginController::class, 'index'])->name('auth.login');
     Route::post('/authenticate', [LoginController::class, 'authenticate'])->name('auth.authenticate');
+    Route::get('/register', [RegisterController::class, 'index'])->name('auth.register');
+    Route::post('/register', [RegisterController::class, 'store'])->name('auth.register.store');
 });
 
 /*

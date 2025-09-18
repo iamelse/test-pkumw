@@ -8,11 +8,6 @@ layer(base);
 
 @import "tailwindcss";
 
-@import "flowbite/src/themes/default";
-@plugin "flowbite/plugin";
-@source "../node_modules/flowbite";
-
-
 [x-cloak] { display: none !important; }
 
 @custom-variant dark (&:is(.dark *));

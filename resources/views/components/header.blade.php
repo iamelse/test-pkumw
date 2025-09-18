@@ -155,7 +155,7 @@
           @click.prevent="dropdownOpen = ! dropdownOpen"
         >
           <span class="mr-3 h-11 w-11 overflow-hidden rounded-full">
-            <img src="{{ asset('assets/images/user/owner.jpg') }}" alt="User" />
+            <img src="{{ getUserImageProfilePath(Auth::user()) }}" alt="User" />
           </span>
 
           <span class="text-theme-sm mr-1 block font-medium"> {{ Auth::user()->name }} </span>

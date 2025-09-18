@@ -60,7 +60,7 @@
     "
     x-show="show"
     x-transition.opacity.duration.500ms
-    class="fixed {{ $position }} z-50"
+    class="fixed {{ $position }} z-999999"
 >
     <div class="w-full sm:max-w-[340px] rounded-md bg-white shadow-theme-sm dark:bg-[#1E2634]">
 

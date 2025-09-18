@@ -152,6 +152,15 @@
                                 Sign In
                             </button>
                         </div>
+
+                        <div class="text-sm text-center text-gray-500 dark:text-gray-400">
+                            Don't have an account?
+                            <a href="{{ route('auth.register') }}" 
+                              class="text-brand-500 hover:text-brand-600 dark:text-brand-400 font-medium">
+                                Sign Up
+                            </a>
+                        </div>
+
                     </div>
                 </form>
               </div>

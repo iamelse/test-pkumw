@@ -38,7 +38,7 @@ if (!function_exists('avatar_placeholder')) {
 
 function getUserImageProfilePath($user): string
 {
-    return $user?->image && Storage::disk(config('filesystems.default'))->exists($user->image)
-        ? Storage::disk(config('filesystems.default'))->url($user->image)
+    return $user?->photo && Storage::disk(config('filesystems.default'))->exists($user->photo)
+        ? Storage::disk(config('filesystems.default'))->url($user->photo)
         : avatar_placeholder($user?->name ?? 'User');
 }
