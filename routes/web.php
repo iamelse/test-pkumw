@@ -4,7 +4,7 @@ use App\Http\Controllers\Web\Auth\LoginController;
 use App\Http\Controllers\Web\Auth\LogoutController;
 use App\Http\Controllers\Web\Auth\RegisterController;
 use App\Http\Controllers\Web\Backend\DashboardController;
-use App\Http\Controllers\Web\Backend\RoleController;
+use App\Http\Controllers\Web\Backend\UserProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -34,4 +34,7 @@ Route::prefix('auth')->middleware('is.auth')->group(function () {
 
 Route::prefix('admin')->middleware('is.auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('be.dashboard.index');
+
+    Route::get('/user-profile', [UserProfileController::class, 'show'])->name('be.user_profile.show');
+    Route::put('/user-profile', [UserProfileController::class, 'update'])->name('be.user_profile.update');
 });
