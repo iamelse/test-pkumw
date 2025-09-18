@@ -40,6 +40,17 @@
                             // 'permission' => PermissionEnum::READ_DASHBOARD,
                         ]],
                     ],
+                    [
+                        'order' => 2,
+                        'children' => [[
+                            'type' => 'single',
+                            'label' => 'Patients',
+                            'icon' => 'bx-user',
+                            'route' => 'be.patient.index',
+                            'active' => ['be.patient.index', 'be.patient.create', 'be.patient.edit'],
+                            // 'permission' => PermissionEnum::READ_PATIENT
+                        ]],
+                    ],
                 ]);
 
                 $user = Auth::user();
