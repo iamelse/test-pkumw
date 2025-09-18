@@ -44,6 +44,12 @@ class PatientData
         ];
     }
 
+    // Blood Type
+    public function bloodType(): string
+    {
+        return strtoupper($this->data['blood_type'] ?? '-');
+    }
+
     // Birth info
     public function birthInfo(): string
     {
