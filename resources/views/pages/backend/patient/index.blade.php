@@ -92,10 +92,15 @@
                                         <i class='bx bx-show text-lg'></i>
                                     </template>
                                     <template x-if="loadingId === {{ $patient->id }} && loadingAction === 'view'">
-                                        <svg class="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"></path>
-                                        </svg>
+                                        <div class="animate-spin stroke-blue-600 text-gray-200 dark:text-gray-800">
+                                            <svg width="20" height="20" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <circle cx="14" cy="14" r="12" stroke="currentColor" stroke-width="4"></circle>
+                                                <mask id="path-2-inside-1_3755_26205" fill="white">
+                                                    <path d="M26.0032 14C27.106 14 28.0146 13.1015 27.8578 12.0099C27.5269 9.70542 26.6246 7.5087 25.2196 5.62615C23.4144 3.20752 20.876 1.43698 17.9827 0.578433C15.0893 -0.280117 11.996 -0.18071 9.16381 0.861838C6.95934 1.67331 5.00491 3.02235 3.47057 4.77332C2.74376 5.60275 3.01525 6.85142 3.93957 7.45295C4.86389 8.05447 6.08878 7.77457 6.86161 6.98784C7.89234 5.93857 9.14776 5.12338 10.5434 4.60965C12.5677 3.8645 14.7786 3.79345 16.8466 4.40709C18.9145 5.02073 20.7288 6.2862 22.0191 8.01488C22.9086 9.20671 23.5162 10.5747 23.8078 12.0164C24.0264 13.0973 24.9004 14 26.0032 14Z"></path>
+                                                </mask>
+                                                <path d="M26.0032 14C27.106 14 28.0146 13.1015 27.8578 12.0099C27.5269 9.70542 26.6246 7.5087 25.2196 5.62615C23.4144 3.20752 20.876 1.43698 17.9827 0.578433C15.0893 -0.280117 11.996 -0.18071 9.16381 0.861838C6.95934 1.67331 5.00491 3.02235 3.47057 4.77332C2.74376 5.60275 3.01525 6.85142 3.93957 7.45295C4.86389 8.05447 6.08878 7.77457 6.86161 6.98784C7.89234 5.93857 9.14776 5.12338 10.5434 4.60965C12.5677 3.8645 14.7786 3.79345 16.8466 4.40709C18.9145 5.02073 20.7288 6.2862 22.0191 8.01488C22.9086 9.20671 23.5162 10.5747 23.8078 12.0164C24.0264 13.0973 24.9004 14 26.0032 14Z" stroke="currentStroke" stroke-width="8" mask="url(#path-2-inside-1_3755_26205)"></path>
+                                            </svg>
+                                        </div>
                                     </template>
                                 </button>
 
@@ -128,178 +133,16 @@
     @include('pages.backend.patient.partials.filter-modal')
 
     {{-- Patient Modal (View Only) --}}
-    <div x-show="modals.patient" x-transition.opacity class="fixed inset-0 flex items-center justify-center p-5 overflow-y-auto z-[99999]">
-        <!-- Overlay -->
-        <div @click="closeModal('patient')" class="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]"></div>
-
-        <!-- Modal Box -->
-        <div @click.outside="closeModal('patient')" x-transition 
-            class="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white pt-5 pb-6 px-5 dark:bg-gray-900">
-
-            <!-- Close Button -->
-            <button @click="closeModal('patient')" 
-                class="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
-                <svg class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 6L18 18M6 18L18 6" />
-                </svg>
-            </button>
-
-            <!-- Header -->
-            <div class="mb-5 flex items-center gap-4">
-                <div class="flex items-center justify-center w-16 h-16 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700">
-                    <img :src="patient.avatar || 'https://api.dicebear.com/6.x/identicon/svg?seed=default'" 
-                        alt="Avatar" class="object-cover w-full h-full">
-                </div>
-                <div>
-                    <h4 class="text-2xl font-semibold text-gray-800 dark:text-white" 
-                        x-text="(patient.first_name || '') + ' ' + (patient.last_name || '')"></h4>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Patient information overview</p>
-                </div>
-            </div>
-
-            <!-- Patient Info -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <template x-for="field in [
-                    'rm_number','identity_number','bpjs_number',
-                    'first_name','last_name','gender',
-                    'birth_place','birth_date','phone_number',
-                    'street_address','city_address','state_address',
-                    'emergency_full_name','emergency_phone_number',
-                    'ethnic','education','married_status','job',
-                    'father_name','mother_name','blood_type',
-                    'communication_barrier','disability_status'
-                ]" :key="field">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-400"
-                            x-text="formatLabel(field)"></label>
-                        <p class="mt-1 text-gray-900 dark:text-gray-100 text-sm border-b border-gray-200 dark:border-gray-700 pb-1" 
-                            x-text="patient[field] ?? '-'"></p>
-                    </div>
-                </template>
-            </div>
-
-        </div>
-    </div>
+    @include('pages.backend.patient.partials.show-modal')
 
     {{-- Delete Confirmation Modal --}}
-    <div x-show="modals.delete" x-transition.opacity class="fixed inset-0 flex items-center justify-center p-5 overflow-y-auto z-[99999]">
-        <div @click="closeModal('delete')" class="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]"></div>
-        <div @click.outside="closeModal('delete')" x-transition class="relative w-full max-w-md rounded-3xl bg-white p-6 dark:bg-gray-900">
-            <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Confirm Deletion</h2>
-            <p class="mt-2 text-gray-600 dark:text-gray-400">
-                Are you sure you want to delete <span class="font-medium" x-text="deletePatientName"></span>?
-            </p>
-            <div class="mt-4 flex justify-end gap-3">
-                <button @click="closeModal('delete')" class="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03]">Cancel</button>
-
-                {{-- Form Submit --}}
-                <form :action="'{{ route('be.patient.destroy', ':id') }}'.replace(':id', deletePatientId)" method="POST" class="inline">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Delete</button>
-                </form>
-            </div>
-        </div>
-    </div>
+    @include('pages.backend.patient.partials.delete-confirmation-modal')
 
 </div>
 
 <script>
-function patientPage() {
-    return {
-        patient: {},
-        mode: 'view', // 'view', 'edit', 'create'
-        modals: { filter: false, patient: false, delete: false },
-        loadingId: null,
-        loadingAction: null,
-
-        deletePatientId: null,
-        deletePatientName: '',
-
-        formatLabel(field) {
-            const custom = {
-                rm_number: 'RM Number',
-                bpjs_number: 'BPJS Number',
-                identity_number: 'Identity Number',
-            };
-            if (custom[field]) return custom[field];
-
-            // fallback → Capitalize biasa
-            return field
-                .replace(/_/g, ' ')
-                .replace(/\b\w/g, l => l.toUpperCase());
-        },
-
-        openModal(name, mode = 'view', data = {}) {
-            this.mode = mode;
-            this.modals[name] = true;
-            if (mode === 'create') this.resetPatient();
-            else this.patient = data;
-        },
-
-        closeModal(name) {
-            this.modals[name] = false;
-            if (name === 'delete') {
-                this.deletePatientId = null;
-                this.deletePatientName = '';
-            }
-        },
-
-        resetPatient() {
-            this.patient = {
-                rm_number: '',
-                identity_number: '',
-                bpjs_number: '',
-                first_name: '',
-                last_name: '',
-                gender: '',
-                birth_place: '',
-                birth_date: '',
-                phone_number: '',
-                street_address: '',
-                city_address: '',
-                state_address: '',
-                emergency_full_name: '',
-                emergency_phone_number: '',
-                ethnic: '',
-                education: '',
-                married_status: '',
-                job: '',
-                father_name: '',
-                mother_name: '',
-                blood_type: '',
-                communication_barrier: '',
-                disability_status: ''
-            };
-        },
-
-        showPatientModal(id) {
-            this.loadingId = id;
-            this.loadingAction = 'view';
-            axios.get('{{ route('be.patient.show', ':id') }}'.replace(':id', id))
-                .then(res => {
-                    setTimeout(() => {
-                        this.patient = res.data.data;
-                        this.mode = 'view';
-                        this.modals.patient = true;
-                        this.loadingId = null;
-                        this.loadingAction = null;
-                    }, 300);
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert('Failed to load patient details');
-                    this.loadingId = null;
-                    this.loadingAction = null;
-                });
-        },
-
-        openDeleteModal(id, name) {
-            this.deletePatientId = id;
-            this.deletePatientName = name;
-            this.modals.delete = true;
-        },
+    window.routes = {
+        patientShow: "{{ route('be.patient.show', ':id') }}",
     }
-}
 </script>
 @endsection
