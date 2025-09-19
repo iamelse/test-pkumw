@@ -127,44 +127,56 @@
 
     @include('pages.backend.patient.partials.filter-modal')
 
-    {{-- Patient Modal (View / Edit / Create) --}}
+    {{-- Patient Modal (View Only) --}}
     <div x-show="modals.patient" x-transition.opacity class="fixed inset-0 flex items-center justify-center p-5 overflow-y-auto z-[99999]">
+        <!-- Overlay -->
         <div @click="closeModal('patient')" class="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]"></div>
-        <div @click.outside="closeModal('patient')" x-transition class="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white pt-5 pb-6 px-5 dark:bg-gray-900">
+
+        <!-- Modal Box -->
+        <div @click.outside="closeModal('patient')" x-transition 
+            class="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white pt-5 pb-6 px-5 dark:bg-gray-900">
 
             <!-- Close Button -->
-            <button @click="closeModal('patient')" class="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600 dark:bg-gray-700 dark:bg-white/[0.05] dark:text-gray-400 dark:hover:bg-white/[0.07] dark:hover:text-gray-300">
+            <button @click="closeModal('patient')" 
+                class="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
                 <svg class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 6L18 18M6 18L18 6" />
                 </svg>
             </button>
 
-            <!-- Modal Header -->
+            <!-- Header -->
             <div class="mb-5 flex items-center gap-4">
                 <div class="flex items-center justify-center w-16 h-16 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700">
-                    <img :src="patient.avatar || '/default-avatar.png'" alt="" class="object-cover w-full h-full">
+                    <img :src="patient.avatar || 'https://api.dicebear.com/6.x/identicon/svg?seed=default'" 
+                        alt="Avatar" class="object-cover w-full h-full">
                 </div>
                 <div>
-                    <h4 class="text-2xl font-semibold text-gray-800 dark:text-white" x-text="(patient.first_name || '') + ' ' + (patient.last_name || '') || (mode === 'create' ? 'New Patient' : 'Patient Details')"></h4>
-                    <p class="text-sm text-gray-500 dark:text-gray-400" x-text="mode === 'view' ? 'Patient information overview' : 'Fill patient information'"></p>
+                    <h4 class="text-2xl font-semibold text-gray-800 dark:text-white" 
+                        x-text="(patient.first_name || '') + ' ' + (patient.last_name || '')"></h4>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Patient information overview</p>
                 </div>
             </div>
 
-            <!-- Patient Form -->
-            <form class="grid grid-cols-1 md:grid-cols-2 gap-4" @submit.prevent="submitPatient">
-                <template x-for="field in ['rm_number','identity_number','bpjs_number','gender','birth_place','birth_date','phone_number','street_address','city_address','state_address','emergency_full_name','emergency_phone_number','ethnic','education','married_status','job','father_name','mother_name','blood_type']" :key="field">
+            <!-- Patient Info -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <template x-for="field in [
+                    'rm_number','identity_number','bpjs_number',
+                    'first_name','last_name','gender',
+                    'birth_place','birth_date','phone_number',
+                    'street_address','city_address','state_address',
+                    'emergency_full_name','emergency_phone_number',
+                    'ethnic','education','married_status','job',
+                    'father_name','mother_name','blood_type',
+                    'communication_barrier','disability_status'
+                ]" :key="field">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-400" x-text="field.replace('_',' ').toUpperCase()"></label>
-                        <input type="text" x-model="patient[field]" :readonly="mode==='view'" class="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-400"
+                            x-text="formatLabel(field)"></label>
+                        <p class="mt-1 text-gray-900 dark:text-gray-100 text-sm border-b border-gray-200 dark:border-gray-700 pb-1" 
+                            x-text="patient[field] ?? '-'"></p>
                     </div>
                 </template>
-
-                <div class="col-span-2 mt-4" x-show="mode !== 'view'">
-                    <button type="submit" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700">
-                        Save
-                    </button>
-                </div>
-            </form>
+            </div>
 
         </div>
     </div>
@@ -199,21 +211,68 @@ function patientPage() {
         mode: 'view', // 'view', 'edit', 'create'
         modals: { filter: false, patient: false, delete: false },
         loadingId: null,
-        loadingAction: null, // 'view' or 'edit'
+        loadingAction: null,
 
         deletePatientId: null,
         deletePatientName: '',
 
+        formatLabel(field) {
+            const custom = {
+                rm_number: 'RM Number',
+                bpjs_number: 'BPJS Number',
+                identity_number: 'Identity Number',
+            };
+            if (custom[field]) return custom[field];
+
+            // fallback → Capitalize biasa
+            return field
+                .replace(/_/g, ' ')
+                .replace(/\b\w/g, l => l.toUpperCase());
+        },
+
         openModal(name, mode = 'view', data = {}) {
             this.mode = mode;
             this.modals[name] = true;
-            if (mode === 'create') this.patient = {};
+            if (mode === 'create') this.resetPatient();
             else this.patient = data;
         },
+
         closeModal(name) {
             this.modals[name] = false;
-            if(name==='delete') { this.deletePatientId = null; this.deletePatientName = ''; }
+            if (name === 'delete') {
+                this.deletePatientId = null;
+                this.deletePatientName = '';
+            }
         },
+
+        resetPatient() {
+            this.patient = {
+                rm_number: '',
+                identity_number: '',
+                bpjs_number: '',
+                first_name: '',
+                last_name: '',
+                gender: '',
+                birth_place: '',
+                birth_date: '',
+                phone_number: '',
+                street_address: '',
+                city_address: '',
+                state_address: '',
+                emergency_full_name: '',
+                emergency_phone_number: '',
+                ethnic: '',
+                education: '',
+                married_status: '',
+                job: '',
+                father_name: '',
+                mother_name: '',
+                blood_type: '',
+                communication_barrier: '',
+                disability_status: ''
+            };
+        },
+
         showPatientModal(id) {
             this.loadingId = id;
             this.loadingAction = 'view';
@@ -225,7 +284,7 @@ function patientPage() {
                         this.modals.patient = true;
                         this.loadingId = null;
                         this.loadingAction = null;
-                    }, 500);
+                    }, 300);
                 })
                 .catch(err => {
                     console.error(err);
@@ -234,6 +293,7 @@ function patientPage() {
                     this.loadingAction = null;
                 });
         },
+
         openDeleteModal(id, name) {
             this.deletePatientId = id;
             this.deletePatientName = name;

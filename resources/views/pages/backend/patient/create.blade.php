@@ -6,8 +6,8 @@
     {{-- Page Header --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Patient Form</h1>
-            <p class="text-gray-600 dark:text-gray-400">Fill in patient details below.</p>
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Create Patient</h1>
+            <p class="text-gray-600 dark:text-gray-400">Fill in the patient details below.</p>
         </div>
         <div class="mt-3 sm:mt-0">
             <a href="{{ route('be.patient.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300">
@@ -22,13 +22,13 @@
         {{-- Patient Avatar --}}
         <div class="flex justify-center m-4">
             <div class="w-36 h-36 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700">
-                <img src="{{ old('avatar', $patient->avatar ?? 'https://api.dicebear.com/6.x/identicon/svg?seed=default') }}" 
+                <img src="{{ old('avatar', 'https://api.dicebear.com/6.x/identicon/svg?seed=default') }}" 
                     alt="Avatar" class="object-cover w-full h-full">
             </div>
         </div>
 
         {{-- Form --}}
-        <form action="{{ route('be.patient.store') }}" method="POST" class="space-y-8">
+        <form action="{{ route('be.patient.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8">
             @csrf
 
             {{-- 1. Patient Identity --}}
@@ -91,16 +91,16 @@
                             'name'        => 'education',
                             'type'        => 'select',
                             'options'     => [
-                                ['key' => 'SD',         'value' => 'SD'],
-                                ['key' => 'SMP',        'value' => 'SMP'],
-                                ['key' => 'SMA',        'value' => 'SMA'],
-                                ['key' => 'D1',         'value' => 'D1'],
-                                ['key' => 'D2',         'value' => 'D2'],
-                                ['key' => 'D3',         'value' => 'D3'],
-                                ['key' => 'D4',         'value' => 'D4'],
-                                ['key' => 'S1',         'value' => 'S1'],
-                                ['key' => 'S2',         'value' => 'S2'],
-                                ['key' => 'S3',         'value' => 'S3'],
+                                ['key' => 'SD', 'value' => 'SD'],
+                                ['key' => 'SMP','value' => 'SMP'],
+                                ['key' => 'SMA','value' => 'SMA'],
+                                ['key' => 'D1', 'value' => 'D1'],
+                                ['key' => 'D2', 'value' => 'D2'],
+                                ['key' => 'D3', 'value' => 'D3'],
+                                ['key' => 'D4', 'value' => 'D4'],
+                                ['key' => 'S1', 'value' => 'S1'],
+                                ['key' => 'S2', 'value' => 'S2'],
+                                ['key' => 'S3', 'value' => 'S3'],
                                 ['key' => 'Pendidikan Profesi', 'value' => 'Pendidikan Profesi'],
                             ],
                             'placeholder' => 'Select Education',
@@ -154,7 +154,8 @@
                                         @error($field['name']) border-red-500 focus:border-blue-600 focus:ring-blue-600 @enderror">
                                     <option value="">{{ $field['placeholder'] }}</option>
                                     @foreach($field['options'] as $option)
-                                        <option value="{{ $option['key'] }}" {{ old($field['name']) === $option['key'] ? 'selected' : '' }}>
+                                        <option value="{{ $option['key'] }}" 
+                                            {{ old($field['name']) === $option['key'] ? 'selected' : '' }}>
                                             {{ $option['value'] ?? $option['key'] }}
                                         </option>
                                     @endforeach
@@ -162,17 +163,17 @@
                                 @break
 
                             @case('date')
-                                <input type="date" name="{{ $field['name'] }}" value="{{ old($field['name']) }}" placeholder="{{ $field['placeholder'] }}"
-                                    class="mt-1 h-10 w-full rounded-lg border px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90
-                                        focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600
-                                        @error($field['name']) border-red-500 focus:border-blue-600 focus:ring-blue-600 @enderror">
+                                <input type="date" name="{{ $field['name'] }}" 
+                                    value="{{ old($field['name']) }}" 
+                                    placeholder="{{ $field['placeholder'] }}"
+                                    class="mt-1 h-10 w-full rounded-lg border px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
                                 @break
 
                             @default
-                                <input type="text" name="{{ $field['name'] }}" value="{{ old($field['name']) }}" placeholder="{{ $field['placeholder'] }}"
-                                    class="mt-1 h-10 w-full rounded-lg border px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90
-                                        focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600
-                                        @error($field['name']) border-red-500 focus:border-blue-600 focus:ring-blue-600 @enderror">
+                                <input type="text" name="{{ $field['name'] }}" 
+                                    value="{{ old($field['name']) }}" 
+                                    placeholder="{{ $field['placeholder'] }}"
+                                    class="mt-1 h-10 w-full rounded-lg border px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
                         @endswitch
 
                         @error($field['name'])
@@ -182,7 +183,7 @@
                 @endforeach
             </div>
 
-            {{-- 2. Contact & Address --}}
+            {{-- Contact & Address --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                 <h3 class="col-span-2 text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">Contact & Address</h3>
 
@@ -200,10 +201,10 @@
                 @foreach($contactFields as $field)
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-400">{{ $field['label'] }}</label>
-                        <input type="text" name="{{ $field['name'] }}" value="{{ old($field['name']) }}" placeholder="{{ $field['placeholder'] }}"
-                            class="mt-1 h-10 w-full rounded-lg border px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90
-                                focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600
-                                @error($field['name']) border-red-500 focus:border-blue-600 focus:ring-blue-600 @enderror">
+                        <input type="text" name="{{ $field['name'] }}" 
+                            value="{{ old($field['name']) }}" 
+                            placeholder="{{ $field['placeholder'] }}"
+                            class="mt-1 h-10 w-full rounded-lg border px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
                         @error($field['name'])
                             <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                         @enderror
@@ -211,49 +212,45 @@
                 @endforeach
             </div>
 
-            {{-- 3. Additional Information --}}
+            {{-- Additional Information --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                 <h3 class="col-span-2 text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">Additional Information</h3>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-400">Communication Barrier</label>
                     <textarea name="communication_barrier" class="mt-1 w-full rounded-lg border px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">{{ old('communication_barrier') }}</textarea>
-                    @error('communication_barrier')
-                        <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
-                    @enderror
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-400">Disability Status</label>
-                    <input type="text" name="disability_status" value="{{ old('disability_status') }}" placeholder="Enter Disability Status"
+                    <input type="text" name="disability_status" 
+                        value="{{ old('disability_status') }}" 
+                        placeholder="Enter Disability Status"
                         class="mt-1 h-10 w-full rounded-lg border px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                    @error('disability_status')
-                        <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
-                    @enderror
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-400">Father's Name</label>
-                    <input type="text" name="father_name" value="{{ old('father_name') }}" placeholder="Enter Father's Name"
+                    <input type="text" name="father_name" 
+                        value="{{ old('father_name') }}" 
+                        placeholder="Enter Father's Name"
                         class="mt-1 h-10 w-full rounded-lg border px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                    @error('father_name')
-                        <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
-                    @enderror
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-400">Mother's Name</label>
-                    <input type="text" name="mother_name" value="{{ old('mother_name') }}" placeholder="Enter Mother's Name"
+                    <input type="text" name="mother_name" 
+                        value="{{ old('mother_name') }}" 
+                        placeholder="Enter Mother's Name"
                         class="mt-1 h-10 w-full rounded-lg border px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                    @error('mother_name')
-                        <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
-                    @enderror
                 </div>
             </div>
 
             {{-- Submit Button --}}
             <div class="mt-6">
-                <button type="submit" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700">Save Patient</button>
+                <button type="submit" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700">
+                    Create Patient
+                </button>
             </div>
         </form>
     </div>
