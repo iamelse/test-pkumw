@@ -43,7 +43,7 @@ class PatientController extends Controller
         $patientsDTO = array_map(fn($p) => new PatientData($p), $patientsRaw);
 
         return view('pages.backend.patient.index', [
-            'title' => 'Patient List',
+            'title' => 'Patients',
             'patients' => $patients,
             'patientsDTO' => $patientsDTO,
             'filters' => $filters,

@@ -38,8 +38,27 @@
 
             {{-- Filter & Reset --}}
             <div class="flex flex-row gap-3 mt-3 sm:mt-0">
-                <button @click="openModal('filter')" class="text-theme-sm shadow-theme-xs inline-flex h-10 items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">Filter</button>
-                <a href="{{ route('be.patient.index') }}" class="inline-flex h-10 items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">Reset Filter</a>
+
+                {{-- Filter --}}
+                <button @click="openModal('filter')" 
+                    class="text-theme-sm shadow-theme-xs inline-flex h-10 items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
+                    {{-- Funnel Icon --}}
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                        <path d="M3 4h18v2l-7 7v5l-4 2v-7L3 6V4z"/>
+                    </svg>
+                    Filter
+                </button>
+
+                {{-- Reset --}}
+                <a href="{{ route('be.patient.index') }}" 
+                    class="inline-flex h-10 items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
+                    {{-- X Icon --}}
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                        <path d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7a1 1 0 0 0-1.41 1.42L10.59 12l-4.89 4.88a1 1 0 0 0 1.41 1.42L12 13.41l4.88 4.89a1 1 0 0 0 1.42-1.41L13.41 12l4.89-4.88a1 1 0 0 0 0-1.41z"/>
+                    </svg>
+                    Reset Filter
+                </a>
+
             </div>
         </div>
 
@@ -125,11 +144,13 @@
                 </tbody>
             </table>
 
+            {{-- Pagination --}}
             @include('pages.backend.patient.partials.pagination')
 
         </div>
     </div>
 
+    {{-- Filter Modal --}}
     @include('pages.backend.patient.partials.filter-modal')
 
     {{-- Patient Modal (View Only) --}}
