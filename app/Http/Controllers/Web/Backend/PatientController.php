@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web\Backend;
 
 use App\DTO\PatientData;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\API\Patient\StorePatientRequest;
 use App\Services\API\PatientService;
 use Illuminate\Http\Request;
 
@@ -59,7 +60,9 @@ class PatientController extends Controller
 
     public function create()
     {
-        return view('patients.create');
+        return view('pages.backend.patient.create', [
+            'title' => 'New Patient',
+        ]);
     }
 
     public function store(StorePatientRequest $request)
@@ -67,19 +70,8 @@ class PatientController extends Controller
         $patient = $this->patientService->create($request->validated());
 
         return $patient
-            ? redirect()->route('patients.index')->with('success', 'Patient created successfully.')
+            ? redirect()->route('be.patient.index')->with('success', 'Patient created successfully.')
             : back()->withErrors(['error' => 'Failed to create patient. Please try again.']);
-    }
-
-    public function edit(string $id)
-    {
-        $patient = $this->patientService->find($id);
-
-        if (!$patient) {
-            return redirect()->route('patients.index')->withErrors(['error' => 'Patient not found.']);
-        }
-
-        return view('patients.edit', compact('patient'));
     }
 
     public function update(UpdatePatientRequest $request, string $id)
@@ -96,7 +88,7 @@ class PatientController extends Controller
         $deleted = $this->patientService->delete($id);
 
         return $deleted
-            ? redirect()->route('patients.index')->with('success', 'Patient deleted successfully.')
+            ? redirect()->route('be.patient.index')->with('success', 'Patient deleted successfully.')
             : back()->withErrors(['error' => 'Failed to delete patient. Please try again.']);
     }
 }

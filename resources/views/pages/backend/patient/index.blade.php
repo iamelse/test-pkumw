@@ -9,6 +9,12 @@
             <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Patients</h1>
             <p class="text-gray-600 dark:text-gray-400">Manage patient records, search, and filter easily.</p>
         </div>
+        <div class="mt-3 sm:mt-0">
+            <a href="{{ route('be.patient.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700">
+                <i class='bx bx-plus mr-2 text-lg'></i>
+                New Patient
+            </a>
+        </div>
     </div>
 
     {{-- Table Container --}}
@@ -16,7 +22,6 @@
 
         {{-- Table Header --}}
         <div class="flex flex-col gap-5 px-6 mb-4 sm:flex-row sm:items-center sm:justify-between">
-
             {{-- Search Form --}}
             <form method="GET" action="{{ route('be.patient.index') }}" class="flex-1">
                 <input type="hidden" name="blood_type" value="{{ request('blood_type') }}">
@@ -57,8 +62,10 @@
                             <td class="px-6 py-3 text-gray-800 dark:text-gray-200">{{ $patient->rm_number }}</td>
                             <td class="px-6 py-3 text-gray-800 dark:text-gray-200">
                                 <div class="flex items-center gap-3">
-                                    <div class="flex items-center justify-center w-10 h-10 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700">
-                                        <img src="{{ $patient->avatar() }}" alt="{{ $patient->fullName() }}" class="object-cover w-full h-full">
+                                    <div class="flex items-center justify-center aspect-square w-12 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700">
+                                        <img src="{{ $patient->avatar() }}" 
+                                            alt="{{ $patient->fullName() }}" 
+                                            class="object-cover w-full h-full">
                                     </div>
                                     <div>
                                         <span class="block font-medium">{{ $patient->fullName() }}</span>
@@ -79,12 +86,12 @@
                                     @click="showPatientModal({{ $patient->id }})"
                                     class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-300 bg-white shadow-theme-xs text-gray-700 hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
                                     title="View"
-                                    :disabled="loadingId === {{ $patient->id }}"
+                                    :disabled="loadingId === {{ $patient->id }} && loadingAction === 'view'"
                                 >
-                                    <template x-if="loadingId !== {{ $patient->id }}">
+                                    <template x-if="!(loadingId === {{ $patient->id }} && loadingAction === 'view')">
                                         <i class='bx bx-show text-lg'></i>
                                     </template>
-                                    <template x-if="loadingId === {{ $patient->id }}">
+                                    <template x-if="loadingId === {{ $patient->id }} && loadingAction === 'view'">
                                         <svg class="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"></path>
@@ -92,23 +99,19 @@
                                     </template>
                                 </button>
 
-                                <!-- Edit -->
-                                <a href=""
-                                    class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-300 bg-white shadow-theme-xs text-gray-700 hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
-                                    title="Edit">
+                                {{-- Edit Button Direct Link --}}
+                                <a href="{{ route('be.patient.edit', $patient->id) }}" class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-300 bg-white shadow-theme-xs text-gray-700 hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200" title="Edit">
                                     <i class='bx bx-pencil text-lg'></i>
                                 </a>
 
                                 <!-- Delete -->
-                                <form action="" method="POST" onsubmit="return confirm('Are you sure?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                        class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-300 bg-white shadow-theme-xs text-gray-700 hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
-                                        title="Delete">
-                                        <i class='bx bx-trash text-lg'></i>
-                                    </button>
-                                </form>
+                                <button
+                                    @click="openDeleteModal({{ $patient->id }}, '{{ $patient->fullName() }}')"
+                                    class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-300 bg-white shadow-theme-xs text-gray-700 hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
+                                    title="Delete"
+                                >
+                                    <i class='bx bx-trash text-lg'></i>
+                                </button>
                             </td>
                         </tr>
                     @empty
@@ -116,51 +119,15 @@
                     @endforelse
                 </tbody>
             </table>
+
+            @include('pages.backend.patient.partials.pagination')
+
         </div>
     </div>
 
-    {{-- Modals --}}
-    <div x-show="modals.filter" x-transition.opacity class="fixed inset-0 flex items-center justify-center p-5 overflow-y-auto z-[99999]">
-        <div @click="closeModal('filter')" class="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]"></div>
-        <div @click.outside="closeModal('filter')" x-transition class="no-scrollbar relative w-full max-w-[600px] overflow-y-auto rounded-3xl bg-white p-6 dark:bg-gray-900">
-            <button @click="closeModal('filter')" class="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600 dark:bg-gray-700 dark:bg-white/[0.05] dark:text-gray-400 dark:hover:bg-white/[0.07] dark:hover:text-gray-300">
-                <svg class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 6L18 18M6 18L18 6" />
-                </svg>
-            </button>
-            <div class="mb-5">
-                <h4 class="text-2xl font-semibold text-gray-800 dark:text-white">Filter Patients</h4>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Filter the patient list by criteria below.</p>
-            </div>
-            <form method="GET" action="{{ route('be.patient.index') }}" class="flex flex-col gap-5">
-                <input type="hidden" name="search" value="{{ request('search') }}">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-400">Gender</label>
-                    <select name="gender" class="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                        <option value="">All</option>
-                        <option value="male" {{ request('gender') == 'male' ? 'selected' : '' }}>Male</option>
-                        <option value="female" {{ request('gender') == 'female' ? 'selected' : '' }}>Female</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-400">Blood Type</label>
-                    <select name="blood_type" class="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                        <option value="">All</option>
-                        <option value="A" {{ request('blood_type') == 'A' ? 'selected' : '' }}>A</option>
-                        <option value="B" {{ request('blood_type') == 'B' ? 'selected' : '' }}>B</option>
-                        <option value="AB" {{ request('blood_type') == 'AB' ? 'selected' : '' }}>AB</option>
-                        <option value="O" {{ request('blood_type') == 'O' ? 'selected' : '' }}>O</option>
-                    </select>
-                </div>
-                <div class="mt-6 flex justify-end gap-3">
-                    <button type="button" @click="closeModal('filter')" class="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50">Cancel</button>
-                    <button type="submit" class="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700">Apply Filter</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    @include('pages.backend.patient.partials.filter-modal')
 
-    {{-- Patient View Modal --}}
+    {{-- Patient Modal (View / Edit / Create) --}}
     <div x-show="modals.patient" x-transition.opacity class="fixed inset-0 flex items-center justify-center p-5 overflow-y-auto z-[99999]">
         <div @click="closeModal('patient')" class="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]"></div>
         <div @click.outside="closeModal('patient')" x-transition class="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white pt-5 pb-6 px-5 dark:bg-gray-900">
@@ -178,75 +145,48 @@
                     <img :src="patient.avatar || '/default-avatar.png'" alt="" class="object-cover w-full h-full">
                 </div>
                 <div>
-                    <h4 class="text-2xl font-semibold text-gray-800 dark:text-white" x-text="(patient.first_name || '') + ' ' + (patient.last_name || '') || 'Patient Details'"></h4>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Patient information overview</p>
+                    <h4 class="text-2xl font-semibold text-gray-800 dark:text-white" x-text="(patient.first_name || '') + ' ' + (patient.last_name || '') || (mode === 'create' ? 'New Patient' : 'Patient Details')"></h4>
+                    <p class="text-sm text-gray-500 dark:text-gray-400" x-text="mode === 'view' ? 'Patient information overview' : 'Fill patient information'"></p>
                 </div>
             </div>
 
-            <!-- Patient Info Form (Readonly) -->
-            <form class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Patient Form -->
+            <form class="grid grid-cols-1 md:grid-cols-2 gap-4" @submit.prevent="submitPatient">
+                <template x-for="field in ['rm_number','identity_number','bpjs_number','gender','birth_place','birth_date','phone_number','street_address','city_address','state_address','emergency_full_name','emergency_phone_number','ethnic','education','married_status','job','father_name','mother_name','blood_type']" :key="field">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-400" x-text="field.replace('_',' ').toUpperCase()"></label>
+                        <input type="text" x-model="patient[field]" :readonly="mode==='view'" class="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                    </div>
+                </template>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-400">RM Number</label>
-                    <input type="text" :value="patient.rm_number" readonly class="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                <div class="col-span-2 mt-4" x-show="mode !== 'view'">
+                    <button type="submit" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700">
+                        Save
+                    </button>
                 </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-400">Identity Number</label>
-                    <input type="text" :value="patient.identity_number" readonly class="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-400">BPJS Number</label>
-                    <input type="text" :value="patient.bpjs_number" readonly class="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-400">Gender</label>
-                    <input type="text" :value="patient.gender" readonly class="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-400">Birth Place & Date</label>
-                    <input type="text" :value="(patient.birth_place || '') + ', ' + (patient.birth_date || '')" readonly class="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-400">Phone Number</label>
-                    <input type="text" :value="patient.phone_number" readonly class="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-400">Address</label>
-                    <input type="text" :value="(patient.street_address || '') + ', ' + (patient.city_address || '') + ', ' + (patient.state_address || '')" readonly class="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-400">Emergency Contact</label>
-                    <input type="text" :value="(patient.emergency_full_name || '') + ' (' + (patient.emergency_phone_number || '') + ')'" readonly class="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-400">Ethnic / Education</label>
-                    <input type="text" :value="(patient.ethnic || '') + ' / ' + (patient.education || '')" readonly class="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-400">Marital Status / Job</label>
-                    <input type="text" :value="(patient.married_status || '') + ' / ' + (patient.job || '')" readonly class="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-400">Father / Mother</label>
-                    <input type="text" :value="(patient.father_name || '') + ' / ' + (patient.mother_name || '')" readonly class="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-400">Blood Type</label>
-                    <input type="text" :value="patient.blood_type" readonly class="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                </div>
-
             </form>
+
+        </div>
+    </div>
+
+    {{-- Delete Confirmation Modal --}}
+    <div x-show="modals.delete" x-transition.opacity class="fixed inset-0 flex items-center justify-center p-5 overflow-y-auto z-[99999]">
+        <div @click="closeModal('delete')" class="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]"></div>
+        <div @click.outside="closeModal('delete')" x-transition class="relative w-full max-w-md rounded-3xl bg-white p-6 dark:bg-gray-900">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Confirm Deletion</h2>
+            <p class="mt-2 text-gray-600 dark:text-gray-400">
+                Are you sure you want to delete <span class="font-medium" x-text="deletePatientName"></span>?
+            </p>
+            <div class="mt-4 flex justify-end gap-3">
+                <button @click="closeModal('delete')" class="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03]">Cancel</button>
+
+                {{-- Form Submit --}}
+                <form :action="'{{ route('be.patient.destroy', ':id') }}'.replace(':id', deletePatientId)" method="POST" class="inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Delete</button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -256,27 +196,49 @@
 function patientPage() {
     return {
         patient: {},
-        modals: { filter: false, patient: false },
-        loadingId: null, // untuk spinner per baris
-        openModal(name) { this.modals[name] = true },
-        closeModal(name) { this.modals[name] = false },
+        mode: 'view', // 'view', 'edit', 'create'
+        modals: { filter: false, patient: false, delete: false },
+        loadingId: null,
+        loadingAction: null, // 'view' or 'edit'
+
+        deletePatientId: null,
+        deletePatientName: '',
+
+        openModal(name, mode = 'view', data = {}) {
+            this.mode = mode;
+            this.modals[name] = true;
+            if (mode === 'create') this.patient = {};
+            else this.patient = data;
+        },
+        closeModal(name) {
+            this.modals[name] = false;
+            if(name==='delete') { this.deletePatientId = null; this.deletePatientName = ''; }
+        },
         showPatientModal(id) {
-            this.loadingId = id; // aktifkan spinner pada baris ini
+            this.loadingId = id;
+            this.loadingAction = 'view';
             axios.get('{{ route('be.patient.show', ':id') }}'.replace(':id', id))
                 .then(res => {
-                    // delay 500ms
                     setTimeout(() => {
                         this.patient = res.data.data;
+                        this.mode = 'view';
                         this.modals.patient = true;
-                        this.loadingId = null; // matikan spinner
+                        this.loadingId = null;
+                        this.loadingAction = null;
                     }, 500);
                 })
                 .catch(err => {
                     console.error(err);
                     alert('Failed to load patient details');
                     this.loadingId = null;
+                    this.loadingAction = null;
                 });
-        }
+        },
+        openDeleteModal(id, name) {
+            this.deletePatientId = id;
+            this.deletePatientName = name;
+            this.modals.delete = true;
+        },
     }
 }
 </script>
