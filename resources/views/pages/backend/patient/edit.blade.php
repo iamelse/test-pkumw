@@ -174,7 +174,12 @@
                                 <input type="text" name="{{ $field['name'] }}" 
                                     value="{{ old($field['name'], $patient->{$field['name']}) }}" 
                                     placeholder="{{ $field['placeholder'] }}"
-                                    class="mt-1 h-10 w-full rounded-lg border px-3 text-sm shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                                    class="mt-1 h-10 w-full rounded-lg border px-3 text-sm shadow-theme-xs
+                                        border-gray-300 dark:border-gray-700
+                                        bg-white dark:bg-gray-900 text-gray-900 dark:text-white/90
+                                        focus:outline-none focus:ring-1 focus:ring-blue-600 dark:focus:ring-blue-500
+                                        focus:border-blue-600 dark:focus:border-blue-500
+                                        @error($field['name']) border-red-500 dark:border-red-500 @enderror">
                         @endswitch
 
                         @error($field['name'])
