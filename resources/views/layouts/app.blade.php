@@ -74,6 +74,7 @@
       <x-toast 
           type="success" 
           :message="session('success')"
+          :position="'bottom-6 inset-x-0 flex justify-end end-6'"
       />
     @endif
 
@@ -81,6 +82,7 @@
         <x-toast 
             type="error" 
             :message="session('error') ?? 'Something went wrong'"
+            :position="'bottom-6 inset-x-0 flex justify-end end-6'"
         />
     @endif
 
@@ -88,6 +90,7 @@
       <x-toast 
           type="warning" 
           :message="session('warning')"
+          :position="'bottom-6 inset-x-0 flex justify-end end-6'"
       />
     @endif
 
@@ -95,6 +98,7 @@
       <x-toast 
           type="info" 
           :message="session('info')"
+          :position="'bottom-6 inset-x-0 flex justify-end end-6'"
       />
     @endif
     <!-- ===== Toast End ===== -->

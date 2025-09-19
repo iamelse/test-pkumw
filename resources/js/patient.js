@@ -44,6 +44,15 @@ window.patientPage = function() {
                 .replace(/\b\w/g, l => l.toUpperCase());
         },
 
+        formatValue(field, value) {
+            if (field === 'gender') {
+                if (!value) return '';
+                return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+            }
+
+            return value;
+        },
+
         resetPatient() {
             this.patient = {
                 rm_number: '',
@@ -128,7 +137,10 @@ window.patientPage = function() {
             axios.get(window.routes.patientShow.replace(':id', id))
                 .then(res => {
                     setTimeout(() => {
-                        this.patient = res.data.data; // populate patient data
+                        this.patient = res.data.data;
+
+                        this.patient.gender = this.formatValue('gender', this.patient.gender);
+                        
                         this.mode = 'view';
                         this.modals.patient = true;
                         this.loadingId = null;
