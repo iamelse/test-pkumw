@@ -7,7 +7,7 @@
 
     <!-- Modal Box -->
     <div @click.outside="closeModal('patient')" x-transition
-        class="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white pt-5 pb-6 px-5 dark:bg-gray-900">
+        class="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white pt-5 pb-6 px-6 dark:bg-gray-900">
 
         <!-- Close Button -->
         <button @click="closeModal('patient')" 

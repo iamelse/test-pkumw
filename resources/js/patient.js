@@ -2,18 +2,35 @@ import axios from 'axios';
 
 window.patientPage = function() {
     return {
+        /*
+        |--------------------------------------------------------------------------
+        | State / Data
+        |--------------------------------------------------------------------------
+        |
+        | All reactive data and state variables used in AlpineJS
+        |
+        */
         patient: {},
         mode: 'view',
-        modals: { filter: false, patient: false, delete: false, connectionError: false },
+        modals: {
+            filter: false,
+            patient: false,
+            delete: false,
+            connectionError: false
+        },
         loadingId: null,
         loadingAction: null,
-
         deletePatientId: null,
         deletePatientName: '',
 
-        // =============================
-        // Utility
-        // =============================
+        /*
+        |--------------------------------------------------------------------------
+        | Utilities
+        |--------------------------------------------------------------------------
+        |
+        | Helper functions such as formatLabel and resetPatient
+        |
+        */
         formatLabel(field) {
             const custom = {
                 rm_number: 'RM Number',
@@ -25,24 +42,6 @@ window.patientPage = function() {
             return field
                 .replace(/_/g, ' ')
                 .replace(/\b\w/g, l => l.toUpperCase());
-        },
-
-        // =============================
-        // Modal Handling
-        // =============================
-        openModal(name, mode = 'view', data = {}) {
-            this.mode = mode;
-            this.modals[name] = true;
-            if (mode === 'create') this.resetPatient();
-            else this.patient = data;
-        },
-
-        closeModal(name) {
-            this.modals[name] = false;
-            if (name === 'delete') {
-                this.deletePatientId = null;
-                this.deletePatientName = '';
-            }
         },
 
         resetPatient() {
@@ -73,25 +72,31 @@ window.patientPage = function() {
             };
         },
 
-        showPatientModal(id) {
-            this.loadingId = id;
-            this.loadingAction = 'view';
-            axios.get(window.routes.patientShow.replace(':id', id))
-                .then(res => {
-                    setTimeout(() => {
-                        this.patient = res.data.data;
-                        this.mode = 'view';
-                        this.modals.patient = true;
-                        this.loadingId = null;
-                        this.loadingAction = null;
-                    }, 300);
-                })
-                .catch(err => {
-                    console.error(err);
-                    this.showConnectionError();
-                    this.loadingId = null;
-                    this.loadingAction = null;
-                });
+        /*
+        |--------------------------------------------------------------------------
+        | Modal Handling
+        |--------------------------------------------------------------------------
+        |
+        | All functions to open and close modals
+        |
+        */
+        openModal(name, mode = 'view', data = {}) {
+            this.mode = mode;
+            this.modals[name] = true;
+
+            if (mode === 'create') {
+                this.resetPatient();
+            } else {
+                this.patient = data;
+            }
+        },
+
+        closeModal(name) {
+            this.modals[name] = false;
+            if (name === 'delete') {
+                this.deletePatientId = null;
+                this.deletePatientName = '';
+            }
         },
 
         openDeleteModal(id, name) {
@@ -108,9 +113,44 @@ window.patientPage = function() {
             this.modals.connectionError = false;
         },
 
-        // =============================
-        // Alpine Init
-        // =============================
+        /*
+        |--------------------------------------------------------------------------
+        | API Calls
+        |--------------------------------------------------------------------------
+        |
+        | All functions that call API endpoints via Axios
+        |
+        */
+        showPatientModal(id) {
+            this.loadingId = id;
+            this.loadingAction = 'view';
+
+            axios.get(window.routes.patientShow.replace(':id', id))
+                .then(res => {
+                    setTimeout(() => {
+                        this.patient = res.data.data; // populate patient data
+                        this.mode = 'view';
+                        this.modals.patient = true;
+                        this.loadingId = null;
+                        this.loadingAction = null;
+                    }, 300);
+                })
+                .catch(err => {
+                    console.error(err);
+                    this.showConnectionError();
+                    this.loadingId = null;
+                    this.loadingAction = null;
+                });
+        },
+
+        /*
+        |--------------------------------------------------------------------------
+        | AlpineJS Initialization
+        |--------------------------------------------------------------------------
+        |
+        | Initialization function when the component is mounted
+        |
+        */
         init() {
             if (!window.patientDataAvailable) {
                 // this.showConnectionError();
