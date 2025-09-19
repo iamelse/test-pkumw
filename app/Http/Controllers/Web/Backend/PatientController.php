@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Web\Backend;
 use App\DTO\PatientData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\Patient\StorePatientRequest;
+use App\Http\Requests\API\Patient\UpdatePatientRequest;
 use App\Services\API\PatientService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class PatientController extends Controller
 {
@@ -67,19 +70,58 @@ class PatientController extends Controller
 
     public function store(StorePatientRequest $request)
     {
-        $patient = $this->patientService->create($request->validated());
+        try {
+            $validated = $request->validated();
 
-        return $patient
-            ? redirect()->route('be.patient.index')->with('success', 'Patient created successfully.')
-            : back()->withErrors(['error' => 'Failed to create patient. Please try again.']);
+            $validated['ethnic'] = $validated['ethnic'] ? json_encode([$validated['ethnic']]) : null;
+
+            $patient = $this->patientService->create($validated);
+
+            return $patient
+                ? redirect()->route('be.patient.index')->with('success', 'Patient created successfully.')
+                : back()->withErrors(['error' => 'Failed to create patient. Please try again.']);
+
+        } catch (ValidationException $e) {
+            Log::error('Validation failed when creating patient', [
+                'errors' => $e->errors(),
+                'input'  => $request->all(),
+            ]);
+
+            throw $e;
+        } catch (\Exception $e) {
+            Log::error('Unexpected error when creating patient', [
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+            ]);
+
+            return back()->withErrors(['error' => 'Unexpected error occurred.']);
+        }
+    }
+
+    public function edit(string $id)
+    {
+        $patient = $this->patientService->getById($id);
+
+        if (!$patient) {
+            return abort(404, 'Patient not found.');
+        }
+
+        return view('pages.backend.patient.edit', [
+            'title' => 'Edit Patient',
+            'patient' => (object) $patient['data']
+        ]);
     }
 
     public function update(UpdatePatientRequest $request, string $id)
     {
-        $patient = $this->patientService->update($id, $request->validated());
+        $validated = $request->validated();
+
+        $validated['ethnic'] = $validated['ethnic'] ? json_encode([$validated['ethnic']]) : null;
+
+        $patient = $this->patientService->update($id, $validated);
 
         return $patient
-            ? redirect()->route('patients.index')->with('success', 'Patient updated successfully.')
+            ? redirect()->route('be.patient.index')->with('success', 'Patient updated successfully.')
             : back()->withErrors(['error' => 'Failed to update patient. Please try again.']);
     }
 
