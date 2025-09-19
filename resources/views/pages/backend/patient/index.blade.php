@@ -159,11 +159,58 @@
     {{-- Delete Confirmation Modal --}}
     @include('pages.backend.patient.partials.delete-confirmation-modal')
 
+    <!-- Connection Error Modal -->
+    <div x-show="modals.connectionError" x-transition.opacity
+        class="fixed inset-0 z-[99999] flex items-center justify-center p-5 overflow-y-auto">
+
+        <!-- Overlay -->
+        <div @click="closeConnectionError()" 
+            class="fixed inset-0 h-full w-full bg-gray-400/10 backdrop-blur-[6px]">
+        </div>
+
+        <!-- Modal Box -->
+        <div @click.outside="closeConnectionError()" x-transition
+            class="relative w-full max-w-md rounded-3xl bg-white p-6 dark:bg-gray-900">
+
+            <!-- Header with Icon -->
+            <div class="flex items-center gap-3">
+                <!-- Warning Icon -->
+                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-white">
+                    Connection Error
+                </h2>
+            </div>
+
+            <!-- Message -->
+            <p class="mt-4 text-gray-600 dark:text-gray-400">
+                Unable to reach the server. Please check your internet connection
+                or try again later.
+            </p>
+
+            <!-- Actions -->
+            <div class="mt-6 flex justify-end gap-3">
+
+                <!-- Close Button -->
+                <button @click="closeConnectionError()" 
+                    class="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 
+                        dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03]">
+                    Close
+                </button>
+
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script>
+    window.patientDataAvailable = @json(!empty($patients['data']) && $patients['data']['total'] > 0);
     window.routes = {
         patientShow: "{{ route('be.patient.show', ':id') }}",
-    }
+    };
 </script>
 @endsection

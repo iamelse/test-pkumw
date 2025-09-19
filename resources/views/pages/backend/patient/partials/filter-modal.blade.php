@@ -1,7 +1,7 @@
 <div x-show="modals.filter" x-transition.opacity class="fixed inset-0 flex items-center justify-center p-5 overflow-y-auto z-[99999]">
     
     {{-- Backdrop --}}
-    <div @click="closeModal('filter')" class="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]"></div>
+    <div @click="closeModal('filter')" class="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[6px]"></div>
     
     {{-- Modal Content --}}
     <div @click.outside="closeModal('filter')" 

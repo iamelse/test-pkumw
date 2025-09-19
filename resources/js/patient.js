@@ -4,13 +4,16 @@ window.patientPage = function() {
     return {
         patient: {},
         mode: 'view',
-        modals: { filter: false, patient: false, delete: false },
+        modals: { filter: false, patient: false, delete: false, connectionError: false },
         loadingId: null,
         loadingAction: null,
 
         deletePatientId: null,
         deletePatientName: '',
 
+        // =============================
+        // Utility
+        // =============================
         formatLabel(field) {
             const custom = {
                 rm_number: 'RM Number',
@@ -24,6 +27,9 @@ window.patientPage = function() {
                 .replace(/\b\w/g, l => l.toUpperCase());
         },
 
+        // =============================
+        // Modal Handling
+        // =============================
         openModal(name, mode = 'view', data = {}) {
             this.mode = mode;
             this.modals[name] = true;
@@ -82,7 +88,7 @@ window.patientPage = function() {
                 })
                 .catch(err => {
                     console.error(err);
-                    alert('Failed to load patient details');
+                    this.showConnectionError();
                     this.loadingId = null;
                     this.loadingAction = null;
                 });
@@ -93,5 +99,22 @@ window.patientPage = function() {
             this.deletePatientName = name;
             this.modals.delete = true;
         },
+
+        showConnectionError() {
+            this.modals.connectionError = true;
+        },
+
+        closeConnectionError() {
+            this.modals.connectionError = false;
+        },
+
+        // =============================
+        // Alpine Init
+        // =============================
+        init() {
+            if (!window.patientDataAvailable) {
+                // this.showConnectionError();
+            }
+        }
     }
 }

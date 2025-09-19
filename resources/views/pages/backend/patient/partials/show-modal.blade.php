@@ -3,7 +3,7 @@
 
     <!-- Overlay -->
     <div @click="closeModal('patient')" 
-        class="fixed inset-0 bg-gray-400/50 backdrop-blur-[32px]"></div>
+        class="fixed inset-0 bg-gray-400/50 backdrop-blur-[6px]"></div>
 
     <!-- Modal Box -->
     <div @click.outside="closeModal('patient')" x-transition

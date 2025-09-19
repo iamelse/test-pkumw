@@ -53,7 +53,7 @@
     <!-- MODAL -->
     <div x-show="isProfileInfoModal" x-transition.opacity class="fixed inset-0 flex items-center justify-center p-5 overflow-y-auto z-[99999]">
         <!-- Backdrop -->
-        <div @click="isProfileInfoModal = false" class="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]"></div>
+        <div @click="isProfileInfoModal = false" class="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[6px]"></div>
 
         <!-- Modal Content -->
         <div @click.outside="isProfileInfoModal = false" x-transition class="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">

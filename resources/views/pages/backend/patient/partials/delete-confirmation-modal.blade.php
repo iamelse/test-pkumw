@@ -3,7 +3,7 @@
 
     <!-- Overlay -->
     <div @click="closeModal('delete')" 
-        class="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]">
+        class="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[6px]">
     </div>
 
     <!-- Modal Box -->
